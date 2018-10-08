@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Demo lambda API Gateway SAM template and deployment pipeline
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+
+Resources:
+
+  DemoLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      CodeUri: src/demo
+      Timeout: 5
+      Environment:
+        Variables:
+          Environment: !Ref Environment
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - logs:PutLogEvents
+                - logs:DescribeLogStreams
+                - logs:DescribeLogGroups
+              Resource:
+                - '*'
+      Events:
+        GetApi:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
